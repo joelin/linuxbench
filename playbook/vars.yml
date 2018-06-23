@@ -1,0 +1,4 @@
+---
+  result_dir: /tmp/benchresult2/
+  collection_dir: /tmp/collections2/
+  work_dir: /tmp/benchtool/

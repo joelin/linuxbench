@@ -1,0 +1,19 @@
+---
+- hosts: bigdata
+  vars_files:
+    - vars.yml
+  remote_user: root
+  tasks:
+    - name: list files
+      find:
+        paths: "{{ result_dir }}"
+        patterns: "*"
+        recurse: yes
+      register: file_for_fetch
+
+    - name: fetch from server
+      fetch:
+        src: "{{ item.path }}"
+        dest: "{{ collection_dir }}"
+        flat: yes
+      with_items: "{{ file_for_fetch.files }}"

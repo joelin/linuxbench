@@ -1,0 +1,41 @@
+---
+- hosts: bigdata
+  vars_files:
+    - vars.yml
+  remote_user: root
+  tasks:
+    - name: install software 
+      shell: yum -y install fio sosreport unixbench
+      tags:
+       - init
+    - name: init tools dir
+      file: dest="{{ work_dir }}" state=directory
+      tags:
+       - init
+    - name: send script to server
+      synchronize: src=files/ dest="{{ work_dir }}"
+      tags:
+       - init
+    - name: set execute 
+      shell: chmod +x "{{ work_dir }}"*.sh
+      tags:
+       - init
+    - name: mkdir result dir
+      file: dest="{{ result_dir }}" state=directory
+      tags:
+       - init
+    - name: run sosreport 
+      shell: nohup sh "{{ work_dir }}"/sosreport.sh "{{ result_dir }}" &
+      tags:
+       - sosreport
+       - benchmark      
+    - name: run fio
+      shell: nohup sh "{{ work_dir }}"/fiotest.sh "{{ result_dir }}" &
+      tags:
+       - fio
+       - benchmark
+    - name: run unixbench
+      shell: nohup sh "{{ work_dir }}"/unixbench.sh "{{ result_dir }}" & 
+      tags:
+        - unixbench
+        - benchmark
